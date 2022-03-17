@@ -1,26 +1,79 @@
-// Test import of a JavaScript module
-import { example } from '@/js/example'
-
-// Test import of an asset
-import webpackLogo from '@/images/webpack-logo.svg'
 
 // Test import of styles
-import '@/styles/index.scss'
+import '@/styles/app.scss'
+import {request} from './js/apiService'
 
-// Appending to the DOM
-const logo = document.createElement('img')
-logo.src = webpackLogo
+const currencySelectors = document.querySelectorAll('.currency-selector');
 
-const heading = document.createElement('h1')
-heading.textContent = example()
+const fromAmountInput = document.querySelector('#from_amount');
+const toAmountInput = document.querySelector('.to_amount');
 
-// Test a background image url in CSS
-const imageBackground = document.createElement('div')
-imageBackground.classList.add('image')
+let fromCurrencyValue = '';
+let toCurrencyValue = '';
+let fromAmount = '';
 
-// Test a public folder asset
-const imagePublic = document.createElement('img')
-imagePublic.src = '/assets/example.png'
+function setupCurrencies(){
+    try{
+       request('currencies.min.json').then(data => {
+           // const data = response.data
+           currencySelectors.forEach(currencySelector => {
+               Object.entries(data).forEach(([key, value]) => {
+                   const option = document.createElement("option")
+                   option.value = key;
+                   option.text = value;
+                   currencySelector.appendChild(option)
+            })
+           })
+       })
+        
+    }
+    catch(e){
+        console.log(e);
+    }
+}
 
-const app = document.querySelector('#root')
-app.append(logo, heading, imageBackground, imagePublic)
+function performValidation(){
+    return fromCurrencyValue && toCurrencyValue && fromAmount;
+}
+
+function convertAmount(){
+    const endPoint = `currencies/${fromCurrencyValue}/${toCurrencyValue}.json`
+
+    request(endPoint).then(data=>{
+        const finalValue = data[toCurrencyValue] * fromAmount;
+        toAmountInput.innerHTML = `$${finalValue}`
+    })
+}
+
+function handleCurrencyChange(e){
+    const value = e.target.value;
+    const isFromCurrency = this.id === 'from_currency';
+    if(isFromCurrency){
+        fromCurrencyValue = value
+    }
+    else{
+        toCurrencyValue = value;
+    }
+    const isValid = performValidation();
+    if(isValid){
+        convertAmount();
+    }
+}
+
+
+function handleFromAmountChange(e){
+    fromAmount = this.value;
+    const isValid = performValidation();
+    if(isValid){
+        convertAmount();
+    }
+}
+
+
+window.addEventListener('load', setupCurrencies);
+currencySelectors.forEach(el => {
+    el.addEventListener('change', handleCurrencyChange )
+})
+fromAmountInput.addEventListener('change', handleFromAmountChange);
+
+

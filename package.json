@@ -1,10 +1,10 @@
 {
-  "name": "webpack-boilerplate",
+  "name": "currency-convertor",
   "version": "3.0.1",
-  "description": "Sensible webpack 5 boilerplate using Babel and PostCSS.",
+  "description": "Simple currency convertor",
   "main": "index.js",
-  "author": "Tania Rascia",
-  "license": "MIT",
+  "author": "Ashwin Singh",
+  "license": "",
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack serve --config config/webpack.dev.js",
     "build": "cross-env NODE_ENV=production webpack --config config/webpack.prod.js",
@@ -43,8 +43,7 @@
     "webpack-dev-server": "^4.3.1",
     "webpack-merge": "^5.8.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:taniarascia/webpack-boilerplate"
+  "dependencies": {
+    "axios": "^0.26.1"
   }
 }
